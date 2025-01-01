@@ -4,47 +4,90 @@ This is your README. READMEs are where you can communicate what your project is 
 
 Write your name on line 6, save it, and then head back to GitHub Desktop.
     
-    ```python
+    ```
+    import tkinter as tk
+    from tkinter import filedialog, messagebox
+    import os
+    import shutil
+
+    class FileManager:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Basic File Manager")
+        self.root.geometry("600x400")
+        
+        # Directory Display Area
+        self.dir_label = tk.Label(self.root, text="No Directory", width=60)
+        self.dir_label.pack(pady=10)
+        
+        # Buttons
+        self.open_btn = tk.Button(self.root, text="Open Directory", command=self.open_directory)
+        self.open_btn.pack(pady=5)
+        
+        self.create_btn = tk.Button(self.root, text="Create Folder", command=self.create_folder)
+        self.create_btn.pack(pady=5)
+        
+        self.delete_btn = tk.Button(self.root, text="Delete File", command=self.delete_file)
+        self.delete_btn.pack(pady=5)
+        
+        self.rename_btn = tk.Button(self.root, text="Rename File", command=self.rename_file)
+        self.rename_btn.pack(pady=5)
+        
+        self.refresh_btn = tk.Button(self.root, text="Refresh", command=self.refresh)
+        self.refresh_btn.pack(pady=5)
+        
+    def open_directory(self):
+        self.directory = filedialog.askdirectory()
+        if self.directory:
+            self.dir_label.config(text=f"Current Directory: {self.directory}")
+        
+    def create_folder(self):
+        if hasattr(self, 'directory'):
+            folder_name = filedialog.asksaveasfilename(defaultextension='', title="Enter folder name")
+            if folder_name:
+                try:
+                    os.mkdir(folder_name)
+                    messagebox.showinfo("Success", f"Folder '{folder_name}' created successfully!")
+                except Exception as e:
+                    messagebox.showerror("Error", f"Error: {e}")
+        else:
+            messagebox.showwarning("Warning", "Please select a directory first!")
     
-def create_file(file_name, content=""):
-    with open(file_name, 'w') as file:
-        file.write(content)
-    print(f"File '{file_name}' created.")
+    def delete_file(self):
+        if hasattr(self, 'directory'):
+            file_path = filedialog.askopenfilename(title="Select a file to delete")
+            if file_path:
+                try:
+                    os.remove(file_path)
+                    messagebox.showinfo("Success", f"File '{file_path}' deleted successfully!")
+                except Exception as e:
+                    messagebox.showerror("Error", f"Error: {e}")
+        else:
+            messagebox.showwarning("Warning", "Please select a directory first!")
 
-def read_file(file_name):
-    if os.path.exists(file_name):
-        with open(file_name, 'r') as file:
-            content = file.read()
-        print(f"Content of '{file_name}':\n{content}")
-    else:
-        print(f"File '{file_name}' does not exist.")
+    def rename_file(self):
+        if hasattr(self, 'directory'):
+            file_path = filedialog.askopenfilename(title="Select a file to rename")
+            if file_path:
+                new_name = filedialog.asksaveasfilename(initialfile=file_path, title="Enter new file name")
+                if new_name:
+                    try:
+                        os.rename(file_path, new_name)
+                        messagebox.showinfo("Success", f"File renamed to '{new_name}'")
+                    except Exception as e:
+                        messagebox.showerror("Error", f"Error: {e}")
+        else:
+            messagebox.showwarning("Warning", "Please select a directory first!")
 
-def delete_file(file_name):
-    if os.path.exists(file_name):
-        os.remove(file_name)
-        print(f"File '{file_name}' deleted.")
-    else:
-        print(f"File '{file_name}' does not exist.")
+    def refresh(self):
+        if hasattr(self, 'directory'):
+            self.dir_label.config(text=f"Current Directory: {self.directory}")
 
-def copy_file(source, destination):
-    if os.path.exists(source):
-        shutil.copy(source, destination)
-        print(f"File '{source}' copied to '{destination}'.")
-    else:
-        print(f"Source file '{source}' does not exist.")
 
-def move_file(source, destination):
-    if os.path.exists(source):
-        shutil.move(source, destination)
-        print(f"File '{source}' moved to '{destination}'.")
-    else:
-        print(f"Source file '{source}' does not exist.")
+    if __name__ == "__main__":
+    root = tk.Tk()
+    app = FileManager(root)
+    root.mainloop()
 
-# Example usage
-create_file('example.txt', 'Hello, world!')
-read_file('example.txt')
-copy_file('example.txt', 'example_copy.txt')
-move_file('example_copy.txt', 'example_moved.txt')
-delete_file('example.txt')
-delete_file('example_moved.txt')
+
     ```
